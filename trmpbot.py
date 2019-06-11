@@ -201,4 +201,4 @@ async def on_message(message):
     
 
 # Botの起動とDiscordサーバーへの接続
-client.run("NTg2MDUyMDg2NTU5NjcwMjc1.XPi2Ig.NES2DUCz7yAG6ChLhI1MwEzC5og")
+client.run("TOKEN")
