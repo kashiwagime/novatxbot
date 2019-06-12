@@ -2,6 +2,8 @@
 import discord
 #rondomをインポート
 import random
+#osをインポート
+import os
 
 
 # 自分のBotのアクセストークン
