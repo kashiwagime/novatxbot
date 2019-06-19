@@ -4,6 +4,7 @@ import discord
 import random
 #osをインポート
 import os
+import copy
 
 
 # 自分のBotのアクセストークン
