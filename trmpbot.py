@@ -10,6 +10,7 @@ import copy
 # 自分のBotのアクセストークン
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
 
+
 # 接続に必要なオブジェクトを生成
 client = discord.Client()
 
@@ -45,6 +46,21 @@ nova_deck = ["カブキ","バサラ","タタラ","ミストレス","カブト","
 #正位置と逆位置
 position = ["正位置","逆位置"]
 
+#トランプの絵
+card_dic = {"DIA　A":"d01","CLUB　A":"c01","HEART　A":"h01","SPADE　A":"s01",
+            "DIA　2":"d02","CLUB　2":"c02","HEART　2":"h02","SPADE　2":"s02",
+            "DIA　3":"d03","CLUB　3":"c03","HEART　3":"h03","SPADE　3":"s03",
+            "DIA　4":"d04","CLUB　4":"c04","HEART　4":"h04","SPADE　4":"s04",
+            "DIA　5":"d05","CLUB　5":"c05","HEART　5":"h05","SPADE　5":"s05",
+            "DIA　6":"d06","CLUB　6":"c06","HEART　6":"h06","SPADE　6":"s06",
+            "DIA　7":"d07","CLUB　7":"c07","HEART　7":"h07","SPADE　7":"s07",
+            "DIA　8":"d08","CLUB　8":"c08","HEART　8":"h08","SPADE　8":"s08",
+            "DIA　9":"d09","CLUB　9":"c09","HEART　9":"h09","SPADE　9":"s09",
+            "DIA　10":"d10","CLUB　10":"c10","HEART　10":"h10","SPADE　10":"s10",
+            "DIA　J":"d11","CLUB　J":"c11","HEART　J":"h11","SPADE　J":"s11",
+            "DIA　Q":"d12","CLUB　Q":"c12","HEART　Q":"h12","SPADE　Q":"s12",
+            "DIA　K":"d13","CLUB　K":"c13","HEART　K":"h13","SPADE　K":"s13"}
+
 # メッセージ受信時に動作する処理
 @client.event
 async def on_message(message): 
@@ -58,6 +74,7 @@ async def on_message(message):
     if message.content == "/52deck":
         ch_id = message.channel.id  #メッセージが送信されたchのIDを定義
         channels_states.setdefault(ch_id, {})        #送信されたIDが辞書にない場合空辞書をつくる
+        channels_states[ch_id].clear()
         deck = copy.copy(deck_52)      #deckにdeck_52のリストと定義する
         trash_deck = []     #trash_deckのリストを空にする処理
         channels_states[ch_id]['deck'] = deck        #channels_statesのchidキー内のdeckキーにdeckを入れる処理
@@ -69,6 +86,7 @@ async def on_message(message):
     if message.content == "/54deck":
         ch_id = message.channel.id  #メッセージが送信されたchのIDを定義
         channels_states.setdefault(ch_id, {})
+        channels_states[ch_id].clear()
         deck = copy.copy(deck_54)
         trash_deck = []
         channels_states[ch_id]['deck'] = deck
@@ -81,6 +99,7 @@ async def on_message(message):
         ch_id = message.channel.id  #メッセージが送信されたchのIDを定義
         deck = copy.copy(deck_108)
         channels_states.setdefault(ch_id, {})
+        channels_states[ch_id].clear()
         trash_deck = []     #trash_deckのリストを空にする処理
         channels_states[ch_id]['deck'] = deck
         channels_states[ch_id]['trash_deck'] = trash_deck
@@ -156,7 +175,9 @@ async def on_message(message):
         trash_card = hand_list[num]     #指定した番号のハンドリストをトラッシュカードと定義する　メッセージを送る時に使う
         hand_list.pop(num)   #ハンドリストからとラッシュカードを消す処理
         channels_states[ch_id]['trash_deck'].append(trash_card)      #トラッシュデッキにトラッシュカードを入れる処理
-        await message.channel.send("　" + trash_card + "を捨てました")
+        msg = message.author.mention + "　" + trash_card + "を捨てました"   #msgの定義
+        await message.channel.send(msg)
+
 
     #「/return」で捨て札を手札に戻す
     if message.content == '/return':
@@ -164,7 +185,7 @@ async def on_message(message):
         user_id = message.author.id
         trash_deck = channels_states[ch_id]['trash_deck']
         return_card = trash_deck[-1]
-        trash_deck.remove(return_card)
+        trash_deck.pop(-1)
         channels_states[ch_id][user_id].append(return_card)
         await message.channel.send(message.author.mention + "　" + return_card + "を手札に戻しました")
 
@@ -201,7 +222,7 @@ async def on_message(message):
         trash_card = hand_list[num]     #指定した番号のハンドリストをトラッシュカードと定義する　メッセージを送る時に使う
         hand_list.pop(num)   #ハンドリストからとラッシュカードを消す処理
         channels_states[ch_id]['deck'].append(trash_card)        #トラッシュデッキにトラッシュカードを入れる処理
-        await message.channel.send("　" + trash_card + "を山札に戻しました")
+        await message.channel.send(message.author.mention + "　" + trash_card + "を山札に戻しました")
 
     #「/dreturn」で山札の一番後ろを手札に戻す
     if message.content == '/dreturn':
@@ -210,7 +231,7 @@ async def on_message(message):
         deck = channels_states[ch_id]['deck']
         trash_deck = channels_states[ch_id]['trash_deck']
         return_card = deck[-1]
-        deck.remove(return_card)
+        deck.pop(-1)
         channels_states[ch_id][user_id].append(return_card)
         await message.channel.send(message.author.mention + "　" + return_card + "を手札に戻しました")
 
@@ -244,7 +265,6 @@ async def on_message(message):
         neuro_deck = channel_nova[ch_id]['neuro']
         neuro_deck.remove(style)        #styleをニューロデッキから除く処理
         await message.channel.send("ニューロデッキから" + style + "を取り出しました")
-
 
 
     
